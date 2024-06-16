@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hexadecimal Encoder/Decoder</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+    body {
+      background: #2c3e50;
+      background: linear-gradient(135deg, #2c3e50 25%, #000000 100%);
+      color: #fff;
+      font-family: 'Roboto', sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        45deg,
+        rgba(255, 255, 255, 0.05),
+        rgba(255, 255, 255, 0.05) 1px,
+        transparent 1px,
+        transparent 50px
+      );
+      z-index: -1;
+    }
+
+    .container {
+      width: 30%;
+      padding: 20px;
+      text-align: center;
+      background: #fff;
+      color: #333;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      margin: 10px;
+    }
+
+    .drop-zone {
+      width: 100%;
+      height: 150px;
+      border: 2px dashed #1abc9c;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #888;
+      margin-bottom: 20px;
+      transition: border-color 0.3s, color 0.3s;
+    }
+
+    .drop-zone.dragover {
+      border-color: #16a085;
+      color: #16a085;
+    }
+
+    button {
+      padding: 8px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background: #1abc9c;
+      color: #fff;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #16a085;
+    }
+
+    h2 {
+      color: #1abc9c;
+      margin-bottom: 20px;
+    }
+
+    .notification {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1abc9c;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s, visibility 0.3s;
+    }
+
+    .notification.show {
+      opacity: 1;
+      visibility: visible;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Encode to Hexadecimal</h2>
+    <div id="drop-zone-encode" class="drop-zone">Drag & Drop your .txt or .doc file here</div>
+    <button id="download-encoded">Download Encoded File</button>
+  </div>
+  <div class="container">
+    <h2>Decode from Hexadecimal</h2>
+    <div id="drop-zone-decode" class="drop-zone">Drag & Drop your Hexadecimal file here</div>
+    <button id="download-decoded">Download Decoded File</button>
+  </div>
+  <div id="notification" class="notification"></div>
+
+  <script>
+    const dropZoneEncode = document.getElementById('drop-zone-encode');
+    const dropZoneDecode = document.getElementById('drop-zone-decode');
+    const notification = document.getElementById('notification');
+    let encodedContent = '';
+    let decodedContent = '';
+
+    function showNotification(message) {
+      notification.innerText = message;
+      notification.classList.add('show');
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 2000);
+    }
+
+    function encodeToHex(str) {
+      return Array.from(str).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
+    }
+
+    function decodeFromHex(hex) {
+      return hex.match(/.{1,2}/g).map(byte => String.fromCharCode(parseInt(byte, 16))).join('');
+    }
+
+    function handleFileRead(event, encode = true) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onload = () => {
+        const content = reader.result;
+        if (encode) {
+          encodedContent = encodeToHex(content);
+          showNotification('File encoded to hexadecimal.');
+        } else {
+          decodedContent = decodeFromHex(content);
+          showNotification('File decoded from hexadecimal.');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function handleDrop(event, encode = true) {
+      event.preventDefault();
+      const file = event.dataTransfer.files[0];
+      const reader = new FileReader();
+      reader.onload = () => {
+        const content = reader.result;
+        if (encode) {
+          encodedContent = encodeToHex(content);
+          showNotification('File encoded to hexadecimal.');
+        } else {
+          decodedContent = decodeFromHex(content);
+          showNotification('File decoded from hexadecimal.');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function downloadFile(content, filename) {
+      const blob = new Blob([content], { type: 'text/plain' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    dropZoneEncode.addEventListener('dragover', event => {
+      event.preventDefault();
+      dropZoneEncode.classList.add('dragover');
+    });
+
+    dropZoneEncode.addEventListener('dragleave', () => {
+      dropZoneEncode.classList.remove('dragover');
+    });
+
+    dropZoneEncode.addEventListener('drop', event => {
+      dropZoneEncode.classList.remove('dragover');
+      handleDrop(event, true);
+    });
+
+    dropZoneDecode.addEventListener('dragover', event => {
+      event.preventDefault();
+      dropZoneDecode.classList.add('dragover');
+    });
+
+    dropZoneDecode.addEventListener('dragleave', () => {
+      dropZoneDecode.classList.remove('dragover');
+    });
+
+    dropZoneDecode.addEventListener('drop', event => {
+      dropZoneDecode.classList.remove('dragover');
+      handleDrop(event, false);
+    });
+
+    document.getElementById('download-encoded').addEventListener('click', () => {
+      if (encodedContent) {
+        downloadFile(encodedContent, 'encoded.txt');
+      } else {
+        alert('No file encoded yet.');
+      }
+    });
+
+    document.getElementById('download-decoded').addEventListener('click', () => {
+      if (decodedContent) {
+        downloadFile(decodedContent, 'decoded.txt');
+      } else {
+        alert('No file decoded yet.');
+      }
+    });
+
+    // Optional: handle file input
+    document.body.addEventListener('change', event => {
+      if (event.target.matches('input[type="file"]')) {
+        handleFileRead(event, event.target.id === 'file-input-encode');
+      }
+    });
+  </script>
+</body>
+</html>
