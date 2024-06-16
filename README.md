@@ -2,7 +2,7 @@
 ## Title
 Hexadecimal Encoder/Decoder
 
-## README
+## README https://interstellar-hitchhiker.github.io/hexD-E-D/
 
 # Hexadecimal Encoder/Decoder
 
@@ -18,13 +18,13 @@ This project provides a simple web-based tool for encoding text files to hexadec
 
 ## Demo
 
-Check out the live demo [here](https://your-github-username.github.io/hexD-E-D).
+Check out the live demo [here]([https://your-github-username.github.io/hexD-E-D](https://interstellar-hitchhiker.github.io/hexD-E-D/)).
 
 ## Installation
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/your-github-username/hexD-E-D.git
+    git clone [https://github.com/your-github-username/hexD-E-D.git]
     ```
 2. Navigate to the project directory:
     ```bash
