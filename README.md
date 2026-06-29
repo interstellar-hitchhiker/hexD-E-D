@@ -1,9 +1,3 @@
-# hexD-E-D
-## Title
-Hexadecimal Encoder/Decoder
-
-## README https://interstellar-hitchhiker.github.io/hexD-E-D/
-
 # Hexadecimal Encoder/Decoder
 
 This project provides a simple web-based tool for encoding text files to hexadecimal and decoding hexadecimal files back to text. The interface allows users to drag and drop files for easy conversion, and offers the ability to download the encoded or decoded files directly from the page.
